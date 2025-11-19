@@ -21,7 +21,8 @@ public enum MapType {
 	edge,
 	ao,
 	property,
-	blank
+	blank,
+	island
 }
 
 public enum FileFormat {
@@ -542,6 +543,9 @@ public class SaveLoadProject : MonoBehaviour {
 				break;
 			case MapType.ao:
 				mainGui._AOMap = newTexture;
+				break;
+			case MapType.island:
+				mainGui._IslandMap = newTexture;
 				break;
 			default:
 				break;

@@ -106,6 +106,7 @@ public class MainGui : MonoBehaviour {
 	public Texture2D _SmoothnessMap;
 	public Texture2D _EdgeMap;
 	public Texture2D _AOMap;
+	public Texture2D _IslandMap;
 
 	public Texture2D _PropertyMap;
 
@@ -164,6 +165,7 @@ public class MainGui : MonoBehaviour {
 	public string QuicksavePathEdge = "";
 	public string QuicksavePathAO = "";
 	public string QuicksavePathProperty = "";
+	public string QuicksaveIsland = "";
 
 	public PropChannelMap propRed = PropChannelMap.None;
 	public PropChannelMap propGreen = PropChannelMap.None;
@@ -1048,13 +1050,62 @@ public class MainGui : MonoBehaviour {
 			FixSize ();
 		}
 		GUI.enabled = true;
+		
+		
+		//==============================//
+		// 			Island Map			//
+		//==============================//
+		
+		GUI.Box( new Rect (offsetX + spacingX * 7, offsetY, 110, 250), "Island Map" );
+		
+		if ( _IslandMap != null ) {
+			GUI.DrawTexture (new Rect(offsetX + spacingX * 7 + 5, offsetY + 25, 100, 100), _IslandMap );
+		}
+
+
+		// Paste 
+		if (GUI.Button (new Rect(offsetX + spacingX * 7  + 5, offsetY + 130, 20, 20), "P")) {
+			mapTypeToLoad = MapType.island;
+			PasteFile ();
+		}
+
+		if (_IslandMap == null) { GUI.enabled = false; } else { GUI.enabled = true; }
+
+		// Copy
+		if (GUI.Button (new Rect(offsetX + spacingX * 7  + 30, offsetY + 130, 20, 20), "C")) {
+			textureToSave = _IslandMap;
+			CopyFile ();
+		}
+
+		GUI.enabled = true;
+		
+		//Open
+		if (GUI.Button (new Rect(offsetX + spacingX * 7 + 60, offsetY + 130, 20, 20), "O")) {
+			mapTypeToLoad = MapType.island;
+			SetFileMaskImage();
+			fileBrowser.ShowBrowser( "Open Island Map", this.OpenFile );
+		}
+		
+		if (_IslandMap == null) { GUI.enabled = false; } else { GUI.enabled = true; }
+		if (GUI.Button (new Rect(offsetX + spacingX * 7 + 15, offsetY + 190, 80, 20), "Preview")) {
+			SetPreviewMaterial( _IslandMap );
+		}
+
+		if (_IslandMap == null) { GUI.enabled = false; } else { GUI.enabled = true; }
+		if (GUI.Button (new Rect(offsetX + spacingX * 7 + 60, offsetY + 220, 45, 20), "Clear")) {
+			ClearTexture(MapType.island);
+			CloseWindows ();
+			SetMaterialValues ();
+			FixSize ();
+		}
+		GUI.enabled = true;
 
 
 		//==============================//
 		// 		Map Saving Options		//
 		//==============================//
 
-		offsetX = offsetX + spacingX * 7;
+		offsetX = offsetX + spacingX * 8;
 
 		GUI.Box( new Rect (offsetX, offsetY, 230, 250), "Saving Options" );
 
@@ -1440,6 +1491,12 @@ public class MainGui : MonoBehaviour {
 				_AOMap = null;
 			}
 			break;
+		case MapType.island:
+			if (_IslandMap) {
+				Destroy (_IslandMap);
+				_IslandMap = null;
+			}
+			break;
 		}
 
 		Resources.UnloadUnusedAssets();
@@ -1547,6 +1604,9 @@ public class MainGui : MonoBehaviour {
 			break;
 		case MapType.ao:
 			SetPreviewMaterial (_AOMap);
+			break;
+		case MapType.island:
+			SetPreviewMaterial (_IslandMap);
 			break;
 		default:
 			break;
