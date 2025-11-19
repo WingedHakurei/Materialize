@@ -23,6 +23,8 @@ Shader "Hidden/Blit_Height_From_Normal" {
 	sampler2D _MainTex;
 	//sampler2D _HeightTex;
 	sampler2D _BlendTex;
+	int _UseIsland;
+	sampler2D _IslandTex;
 	
 	float _BlendAmount;
 	float _Progress;
@@ -62,6 +64,16 @@ Shader "Hidden/Blit_Height_From_Normal" {
 		//mainTex = mainTex * 2.0 - 1.0;
 		//mainTex *= flipTex;
 		
+		float3 startIsland;
+		if (_UseIsland == 1)
+		{
+			startIsland = tex2Dlod(_IslandTex, float4( UV.xy, 0, 0 ) ).xyz;
+			if (all(startIsland == 0.0))
+			{
+				return float4(0.0, 0.0, 0.0, 1.0);
+			}
+		}
+		
 		int AOSamples = _Samples;
 		float startOffset = rand( float3( UV, _Time.y ) );
 		int i;
@@ -82,6 +94,15 @@ Shader "Hidden/Blit_Height_From_Normal" {
 
 			float2 sampleUV = UV.xy + pixelSize.xy * uvOffset;
 
+			if (_UseIsland)
+			{
+				float3 sampleIsland = tex2Dlod(_IslandTex, float4( sampleUV, 0, 0 ) ).xyz;
+				if (any(startIsland != sampleIsland))
+				{
+					break;
+				}
+			}
+			
 			float3 sampleTex = tex2Dlod(_MainTex, float4( sampleUV, 0, 0 ) ).xyz;
 			sampleTex = sampleTex * 2.0 - 1.0;
 			sampleTex *= flipTex;
@@ -97,15 +118,20 @@ Shader "Hidden/Blit_Height_From_Normal" {
 			
 		}
 
-		AO *= 1.0 / TotalWeight;
-		AO *= ( (float)AOSamples * _SpreadBoost ) / 50.0;
-		AO = AO * 0.5 + 0.5;
-
-
-		
 		float blendTex = tex2Dlod(_BlendTex, float4( UV.xy, 0, 0 ) ).x;
 		
-		AO = lerp( blendTex.x, AO, _BlendAmount );
+		if (TotalWeight > 0)
+		{
+			AO *= 1.0 / TotalWeight;
+			AO *= ( (float)AOSamples * _SpreadBoost ) / 50.0;
+			AO = AO * 0.5 + 0.5;
+			
+			AO = lerp( blendTex.x, AO, _BlendAmount );
+		}
+		else
+		{
+			AO = blendTex.x;
+		}
 		
 		return float4( AO.xxx, 1.0 );
 	}

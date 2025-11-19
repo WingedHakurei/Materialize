@@ -10,6 +10,8 @@ public class HeightFromDiffuseSettings {
 	public bool useOriginalDiffuse; 
 	[DefaultValueAttribute(false)]
 	public bool useNormal;
+	[DefaultValueAttribute(false)]
+	public bool useIsland;
 
 
 	[DefaultValueAttribute(0.15f)]
@@ -823,6 +825,19 @@ public class HeightFromDiffuseGui : MonoBehaviour {
         GuiHelper.Slider(new Rect(offsetX, offsetY, 280, 50), "Final Bias", HFDS.FinalBias, HFDS.FinalBiasText, out HFDS.FinalBias, out HFDS.FinalBiasText, -1.0f, 1.0f);
         offsetY += 50;
 
+        var oldUseIsland = HFDS.useIsland;
+        HFDS.useIsland = GUI.Toggle(new Rect(offsetX, offsetY, 80, 30), HFDS.useIsland  && HFDS.useNormal && MainGuiScript._IslandMap, " Island");
+        if (!HFDS.useNormal || MainGuiScript._IslandMap == null)
+        {
+	        HFDS.useIsland = false;
+        }
+
+        if (oldUseIsland != HFDS.useIsland)
+        {
+	        doStuff = true;
+        }
+        GUI.enabled = true;
+
 		if (busy) { GUI.enabled = false; } else { GUI.enabled = true; }
 		if( GUI.Button (new Rect (offsetX + 150, offsetY, 130, 30), "Set as Height Map" ) ){
             StartCoroutine( ProcessHeight () );
@@ -1044,6 +1059,15 @@ public class HeightFromDiffuseGui : MonoBehaviour {
 		blitMaterialNormal.SetFloat("_Samples", (int)HFDS.Spread);
 		blitMaterialNormal.SetTexture("_MainTex", MainGuiScript._NormalMap);
 		blitMaterialNormal.SetTexture("_BlendTex", _BlurMap1);
+		if (HFDS.useIsland && MainGuiScript._IslandMap != null)
+		{
+			blitMaterialNormal.SetInt("_UseIsland", 1);
+			blitMaterialNormal.SetTexture("_IslandTex", MainGuiScript._IslandMap);
+		}
+		else
+		{
+			blitMaterialNormal.SetInt("_UseIsland", 0);
+		}
 
         thisMaterial.SetFloat("_IsNormal", 1.0f);
         thisMaterial.SetTexture("_BlurTex0", _BlurMap0);
