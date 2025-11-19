@@ -7,7 +7,7 @@ public class SuggestionGui : MonoBehaviour {
 	MainGui MainGuiScript;
 
 	public GameObject AuthenticateObject;
-	AuthenticateGui AuthenticateScript;
+	// AuthenticateGui AuthenticateScript;
 	
 	string SuggestionText = "";
 	string stringEmail = "";
@@ -29,9 +29,9 @@ public class SuggestionGui : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		AuthenticateScript = AuthenticateObject.GetComponent<AuthenticateGui> ();
-		stringEmail = AuthenticateScript.stringEmail;
-		Debug.Log ("Suggestion Box Email: " + stringEmail);
+		// AuthenticateScript = AuthenticateObject.GetComponent<AuthenticateGui> ();
+		// stringEmail = AuthenticateScript.stringEmail;
+		// Debug.Log ("Suggestion Box Email: " + stringEmail);
 		windowRect.position = new Vector2( Screen.width - 310, 50 );
 
 	}
@@ -41,30 +41,30 @@ public class SuggestionGui : MonoBehaviour {
 		
 	}
 	
-	IEnumerator SendSuggestion () {
-
-		suggestionState = SuggestionState.Sending;
-
-		// Create a Web Form
-		WWWForm form = new WWWForm();
-		form.AddField("email", stringEmail);
-		form.AddField("suggestion", SuggestionText);
-
-		//WWW www = new WWW("http://boundingboxsoftware.com/materialize/processSuggestion.php", form);
-		WWW www = new WWW("http://squirrelyjones.com/boundingbox/materialize/processSuggestion.php", form);
-		yield return www;
-		string returnText = www.text;
-		Debug.Log ( www.text );
-
-		if (returnText.Contains ("success")) {
-			suggestionState = SuggestionState.Sent;
-			SuggestionText = "";
-		} else {
-			suggestionState = SuggestionState.Failed;
-		}
-
-		yield return new WaitForSeconds(0.01f);
-	}
+	// IEnumerator SendSuggestion () {
+	//
+	// 	suggestionState = SuggestionState.Sending;
+	//
+	// 	// Create a Web Form
+	// 	WWWForm form = new WWWForm();
+	// 	form.AddField("email", stringEmail);
+	// 	form.AddField("suggestion", SuggestionText);
+	//
+	// 	//WWW www = new WWW("http://boundingboxsoftware.com/materialize/processSuggestion.php", form);
+	// 	WWW www = new WWW("http://squirrelyjones.com/boundingbox/materialize/processSuggestion.php", form);
+	// 	yield return www;
+	// 	string returnText = www.text;
+	// 	Debug.Log ( www.text );
+	//
+	// 	if (returnText.Contains ("success")) {
+	// 		suggestionState = SuggestionState.Sent;
+	// 		SuggestionText = "";
+	// 	} else {
+	// 		suggestionState = SuggestionState.Failed;
+	// 	}
+	//
+	// 	yield return new WaitForSeconds(0.01f);
+	// }
 	
 	void DoMyWindow ( int windowID ) {
 		
@@ -76,9 +76,9 @@ public class SuggestionGui : MonoBehaviour {
 			offsetY += 30;
 			SuggestionText = GUI.TextArea (new Rect (offsetX, offsetY, 280, 170), SuggestionText);
 			offsetY += 180;
-			if (GUI.Button (new Rect (offsetX + 150, offsetY, 130, 30), "Send")) {
-				StartCoroutine (SendSuggestion ());
-			}
+			// if (GUI.Button (new Rect (offsetX + 150, offsetY, 130, 30), "Send")) {
+			// 	StartCoroutine (SendSuggestion ());
+			// }
 			if (GUI.Button (new Rect (offsetX, offsetY, 130, 30), "Close")) {
 				this.gameObject.SetActive (false);
 			}
