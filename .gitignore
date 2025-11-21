@@ -1,6 +1,6 @@
 [Ll]ibrary/
 [Tt]emp/
-[Oo]bj/
+obj/
 [Bb]uild/
 [Bb]uilds/
 Assets/AssetStoreTools*
@@ -34,3 +34,5 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+!/Assets/OBJ-IO/Plugins/Mesh/OBJ/
+!/Assets/OBJ-IO/Plugins/Mesh/OBJ/
